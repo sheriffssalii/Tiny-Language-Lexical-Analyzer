@@ -23,7 +23,7 @@ Each token consists of:
 | 2 | Sara Farwiez Mohamed | 324260108 |
 | 3 | Shahd Mostafa Gadallah | 324240209 |
 
-- **Team Leader:** Sara Farwiez  
+- **Team Leader:** Sherif Ali Mohamed 
 - **Teaching Assistant:** Rania Ahmed  
 - **Course:** CS321 – Compiler Design & Theory
 
