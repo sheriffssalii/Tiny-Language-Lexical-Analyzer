@@ -23,7 +23,6 @@ namespace Compiler_Project
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -32,6 +31,7 @@ namespace Compiler_Project
 
             string input = textBox1.Text;
 
+            // ── Patterns ──────────────────────────────────────────────────────────
             string keywordPattern = @"\b(int|float|string|read|write|repeat|until|if|elseif|else|then|return|endl|end|main)\b";
             string identifierPattern = @"[a-zA-Z][a-zA-Z0-9]*";
             string numberPattern = @"[0-9]+(\.[0-9]+)?";
@@ -54,7 +54,9 @@ namespace Compiler_Project
                 symbolPattern + "|" +
                 identifierPattern;
 
+            // ── Phase 1: Scan tokens ──────────────────────────────────────────────
             MatchCollection matches = Regex.Matches(input, masterPattern);
+            List<Token> allTokens = new List<Token>();
 
             foreach (Match m in matches)
             {
@@ -63,46 +65,59 @@ namespace Compiler_Project
 
                 if (Regex.IsMatch(lexeme, keywordPattern))
                     tokenType = "KEYWORD";
-
                 else if (Regex.IsMatch(lexeme, numberPattern))
                     tokenType = "NUMBER";
-
                 else if (Regex.IsMatch(lexeme, stringPattern))
                     tokenType = "STRING";
-
                 else if (Regex.IsMatch(lexeme, commentPattern))
                     tokenType = "COMMENT";
-
                 else if (Regex.IsMatch(lexeme, assignPattern))
                     tokenType = "ASSIGN_OP";
-
                 else if (Regex.IsMatch(lexeme, arithPattern))
                     tokenType = "ARITH_OP";
-
                 else if (Regex.IsMatch(lexeme, condPattern))
                     tokenType = "COND_OP";
-
                 else if (Regex.IsMatch(lexeme, boolPattern))
                     tokenType = "BOOL_OP";
-
                 else if (Regex.IsMatch(lexeme, symbolPattern))
                     tokenType = "SYMBOL";
-
                 else if (Regex.IsMatch(lexeme, identifierPattern))
                     tokenType = "IDENTIFIER";
-
                 else
                     tokenType = "ERROR";
 
+                // Add to grid
                 dataGridView1.Rows.Add(lexeme, tokenType);
+
+                // Add to token list for parser (skip comments)
+                if (tokenType != "COMMENT")
+                    allTokens.Add(new Token { Value = lexeme, Type = tokenType });
+            }
+
+            // ── Phase 2: Parse tokens ─────────────────────────────────────────────
+            if (allTokens.Count == 0)
+            {
+                MessageBox.Show("No tokens found. Please enter some code.", "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                MiniLParser parser = new MiniLParser(allTokens);
+                parser.ParseProgram();
+                MessageBox.Show("Success: Your code is syntactically correct!", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Syntax Error: " + ex.Message, "Syntax Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-
         }
     }
 }
-
-
